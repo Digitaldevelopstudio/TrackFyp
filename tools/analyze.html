@@ -1,64 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Analyze — TrackFyp</title>
-<link rel="stylesheet" href="../css/style.css">
-<style>
-.tabs{display:flex;gap:10px;margin:18px 0}.tab{border:1px solid #333;padding:10px 16px;border-radius:10px;background:#111;color:#ddd;cursor:pointer}.tab.active{background:#ff0050;color:#fff;border-color:#ff0050}.panel{display:none}.panel.active{display:block}.result-grid{display:grid;gap:12px;margin-top:18px}.result-card{padding:14px;border:1px solid #333;border-radius:12px;background:#11151f}.result-card h3{margin:0 0 8px}.score{font-size:34px;font-weight:800}.muted{opacity:.75}.error{color:#ff8fa9}.kv{display:grid;grid-template-columns:minmax(120px,180px) 1fr;gap:8px;border-top:1px solid #292d38;padding:8px 0}@media(max-width:700px){.kv{grid-template-columns:1fr}.tabs{flex-wrap:wrap}}
-</style>
-</head>
-<body>
-<div id="site-header"></div>
-<main>
-<section class="tool-hero container">
-<span class="eyebrow">FREE</span>
-<h1>Analyze</h1>
-<p class="small">TikTok video ya public profile ko analyze karein aur practical growth signals dekhein.</p>
-</section>
-<section class="container tool-layout">
-<div class="tool-box">
-<div class="tabs">
-<button class="tab active" id="videoTab" type="button">🎬 Video Analysis</button>
-<button class="tab" id="channelTab" type="button">👤 Channel Analysis</button>
-</div>
-<div id="videoPanel" class="panel active">
-<div class="field"><label for="videoUrl">TikTok video link</label><input id="videoUrl" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="off"></div>
-<button class="btn btn-hot" id="videoBtn" type="button">Analyze Video</button>
-<div id="videoOut" class="result" style="margin-top:16px"></div>
-</div>
-<div id="channelPanel" class="panel">
-<div class="field"><label for="channelUrl">TikTok profile/channel link</label><input id="channelUrl" placeholder="https://www.tiktok.com/@username" autocomplete="off"></div>
-<button class="btn btn-hot" id="channelBtn" type="button">Analyze Channel</button>
-<div id="channelOut" class="result" style="margin-top:16px"></div>
-</div>
-</div>
-<aside class="side-box">
-<div class="ad-slot">Advertisement</div>
-<p class="small">Basic analysis free hai. Advanced AI analysis Premium mein available hai.</p>
-<a class="btn" href="ai-video-analyzer.html">AI Analyzer</a>
-</aside>
-</section>
-</main>
-<div id="site-footer"></div>
-<script src="../js/config.js"></script>
-<script src="../js/main.js"></script>
-<script>
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Analyze — TrackFyp</title><meta name="description" content="Analyze a public TikTok video or creator profile with TrackFyp."><link rel="stylesheet" href="../css/style.css"></head><body><script>window.BASE='../';</script><div id="site-header"></div><main><section class="tool-hero container"><span class="eyebrow">ANALYZE</span><h1>Analyze Your TikTok</h1><p class="small">Video ka public link ya TikTok profile link paste karein aur available public signals dekhein.</p></section><section class="container tool-layout"><div class="tool-box"><div class="tabs" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"><button class="btn" id="videoTab" type="button">Video Analysis</button><button class="btn" id="channelTab" type="button">Channel Analysis</button></div><div id="videoPanel"><div class="field"><label for="videoUrl">TikTok video link</label><input id="videoUrl" placeholder="https://www.tiktok.com/@user/video/..." autocomplete="url"></div><button class="btn btn-hot" id="videoBtn" type="button">Analyze Video</button><div id="videoOut" class="result"></div></div><div id="channelPanel" style="display:none"><div class="field"><label for="channelUrl">TikTok profile link</label><input id="channelUrl" placeholder="https://www.tiktok.com/@username" autocomplete="url"></div><button class="btn btn-hot" id="channelBtn" type="button">Analyze Channel</button><div id="channelOut" class="result"></div></div></div><aside class="side-box"><div class="ad">Advertisement</div><p class="small">Basic public analysis free hai. Advanced AI analysis Premium mein available hai.</p><a class="btn" href="ai-video-analyzer.html">AI Video Analyzer</a></aside></section></main><div id="site-footer"></div><script src="../js/config.js"></script><script src="../js/main.js"></script><script>
 (function(){
-const API_BASE=(window.TRACKFYP_CONFIG&&window.TRACKFYP_CONFIG.API_BASE)||'';
 const $=id=>document.getElementById(id);
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function labelize(k){return String(k).replace(/[_-]+/g,' ').replace(/\b\w/g,m=>m.toUpperCase());}
-function renderValue(v,depth){depth=depth||0;if(v===null||v===undefined)return '<span class="muted">—</span>';if(typeof v==='string'||typeof v==='number'||typeof v==='boolean')return esc(v);if(Array.isArray(v)){if(!v.length)return '<span class="muted">—</span>';return '<div class="result-grid">'+v.map((x,i)=>'<div class="result-card"><b>'+(i+1)+'.</b> '+renderValue(x,depth+1)+'</div>').join('')+'</div>';}if(typeof v==='object'){if(depth>4)return esc(JSON.stringify(v));return Object.entries(v).map(([k,val])=>'<div class="kv"><b>'+esc(labelize(k))+'</b><div>'+renderValue(val,depth+1)+'</div></div>').join('');}return esc(v);}
-function renderResult(title,data){if(!data||typeof data!=='object')return '<div class="result-card"><h3>'+esc(title)+'</h3><div>'+renderValue(data)+'</div></div>';let score=data.score??data.growthScore??data.growth_score??data.analysisScore;let html='<div class="result-card"><h3>'+esc(title)+'</h3>';if(score!==undefined&&score!==null)html+='<div class="score">'+esc(score)+'</div><div class="muted">Growth / Analysis Score</div>';const entries=Object.entries(data).filter(([k])=>!['score','growthScore','growth_score','analysisScore'].includes(k));if(entries.length)html+='<div style="margin-top:12px">'+entries.map(([k,v])=>'<div class="kv"><b>'+esc(labelize(k))+'</b><div>'+renderValue(v)+'</div></div>').join('')+'</div>';return html+'</div>';}
-async function callApi(path,url){const full=API_BASE.replace(/\/$/,'')+path+'?url='+encodeURIComponent(url);const r=await fetch(full,{headers:{Accept:'application/json'}});let data=null;try{data=await r.json();}catch(e){}if(!r.ok)throw new Error((data&&(data.message||data.error))||('Request failed ('+r.status+')'));return data;}
-function setBusy(btn,busy,text){btn.disabled=busy;btn.textContent=busy?'Analyzing...':text;}
-$("videoTab").onclick=()=>{$("videoTab").classList.add('active');$("channelTab").classList.remove('active');$("videoPanel").classList.add('active');$("channelPanel").classList.remove('active');};
-$("channelTab").onclick=()=>{$("channelTab").classList.add('active');$("videoTab").classList.remove('active');$("channelPanel").classList.add('active');$("videoPanel").classList.remove('active');};
-$("videoBtn").onclick=async function(){const url=$("videoUrl").value.trim();if(!url){$("videoOut").innerHTML='<div class="result-card error">Please enter a TikTok video URL.</div>';return;}setBusy(this,true,'Analyze Video');$("videoOut").innerHTML='<div class="result-card">Analyzing video...</div>';try{$("videoOut").innerHTML=renderResult('Video Analysis',await callApi('/api/analyze',url));}catch(e){$("videoOut").innerHTML='<div class="result-card error"><h3>Could not analyze</h3><p>'+esc(e.message)+'</p></div>';}finally{setBusy(this,false,'Analyze Video');}};
-$("channelBtn").onclick=async function(){const url=$("channelUrl").value.trim();if(!url){$("channelOut").innerHTML='<div class="result-card error">Please enter a TikTok profile URL.</div>';return;}setBusy(this,true,'Analyze Channel');$("channelOut").innerHTML='<div class="result-card">Analyzing channel...</div>';try{$("channelOut").innerHTML=renderResult('Channel Analysis',await callApi('/api/channel-analyze',url));}catch(e){$("channelOut").innerHTML='<div class="result-card error"><h3>Could not analyze channel</h3><p>'+esc(e.message)+'</p></div>';}finally{setBusy(this,false,'Analyze Channel');}};
+$('videoTab').onclick=()=>{ $('videoPanel').style.display='block'; $('channelPanel').style.display='none'; $('videoTab').classList.add('btn-hot'); $('channelTab').classList.remove('btn-hot'); };
+$('channelTab').onclick=()=>{ $('videoPanel').style.display='none'; $('channelPanel').style.display='block'; $('channelTab').classList.add('btn-hot'); $('videoTab').classList.remove('btn-hot'); };
+$('videoTab').classList.add('btn-hot');
+$('videoBtn').onclick=async()=>{const u=$('videoUrl').value.trim();if(!u){showResult('videoOut','<b>Video link zaroori hai.</b>');return;}const b=$('videoBtn');b.disabled=true;b.textContent='Analyzing...';try{const d=await api('/api/analyze?url='+encodeURIComponent(u));let html='<b>Video Analysis</b><div class="check-list" style="margin-top:12px">';html+='<div class="check">Growth Score: <b>'+escapeHtml(d.score??'—')+'/100</b></div>';if(d.views!=null)html+='<div class="check">Views: <b>'+escapeHtml(d.views)+'</b></div>';if(d.likes!=null)html+='<div class="check">Likes: <b>'+escapeHtml(d.likes)+'</b></div>';if(d.comments!=null)html+='<div class="check">Comments: <b>'+escapeHtml(d.comments)+'</b></div>';if(d.shares!=null)html+='<div class="check">Shares: <b>'+escapeHtml(d.shares)+'</b></div>';if(d.engagementRate!=null)html+='<div class="check">Engagement: <b>'+escapeHtml(d.engagementRate)+'%</b></div>';if(d.durationSec)html+='<div class="check">Duration: <b>'+escapeHtml(d.durationSec)+'s</b></div>';if(d.diagnosis)for(const x of d.diagnosis){html+='<div class="check">'+escapeHtml(x.text||x)+'</div>';}if(d.title)html+='<div class="check">Title: '+escapeHtml(d.title)+'</div>';html+='</div>';showResult('videoOut',html);}catch(e){showResult('videoOut','<b>Could not analyze</b><p class="small">'+escapeHtml(e.message)+'</p>');}finally{b.disabled=false;b.textContent='Analyze Video';}};
+$('channelBtn').onclick=async()=>{const u=$('channelUrl').value.trim();if(!u){showResult('channelOut','<b>Profile link zaroori hai.</b>');return;}const b=$('channelBtn');b.disabled=true;b.textContent='Analyzing...';try{const d=await api('/api/channel-analyze?url='+encodeURIComponent(u));let html='<b>Channel Analysis</b><div class="check-list" style="margin-top:12px">';if(d.username)html+='<div class="check">Username: <b>'+escapeHtml(d.username)+'</b></div>';if(d.name)html+='<div class="check">Creator: <b>'+escapeHtml(d.name)+'</b></div>';if(d.followerCount!=null)html+='<div class="check">Followers: <b>'+escapeHtml(d.followerCount)+'</b></div>';if(d.followingCount!=null)html+='<div class="check">Following: <b>'+escapeHtml(d.followingCount)+'</b></div>';if(d.videoCount!=null)html+='<div class="check">Videos: <b>'+escapeHtml(d.videoCount)+'</b></div>';if(d.heartCount!=null)html+='<div class="check">Likes/Hearts: <b>'+escapeHtml(d.heartCount)+'</b></div>';if(d.diagnosis)for(const x of d.diagnosis){html+='<div class="check">'+escapeHtml(x.text||x)+'</div>';}html+='</div>';showResult('channelOut',html);}catch(e){showResult('channelOut','<b>Channel analysis unavailable</b><p class="small">'+escapeHtml(e.message)+'</p>');}finally{b.disabled=false;b.textContent='Analyze Channel';}};
 })();
-</script>
-</body>
-</html>
+</script></body></html>

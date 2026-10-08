@@ -1,17 +1,23 @@
-# TrackFyp — New Website
+# TrackFyp — AI TikTok Growth Assistant
 
-This is the clean TrackFyp frontend planned as the AI TikTok Growth Assistant.
+Frontend for GitHub Pages.
 
-## Free
-Hashtag Generator, Caption Generator, Best Time, Keyword Finder, limited Content Ideas, Basic Video Analyzer, Account Health, Visibility Health and Downloader.
+## Deploy
+Upload the contents of this folder to the root of `Digitaldevelopstudio/TrackFyp` and keep GitHub Pages set to the `main` branch / root folder.
 
-## Premium
-AI Video Analyzer, AI Hook Generator, AI Script Generator, 30-Day Content Planner, Channel Analyzer, Video SEO, CTA Generator and Trend/Niche Finder.
+Backend is deployed separately on Render at:
+`https://trackfyp-backend-new.onrender.com`
 
-## GitHub Pages
-Upload the **contents of this folder** to the new TrackFyp GitHub repository. Do not add a CNAME until the final custom domain is chosen.
+## Included
+- Home / Grow tools
+- Video + Channel Analyze tabs
+- AI Premium tools
+- Video Downloader
+- Video SEO
+- Blog
+- Contact form
+- Privacy / Terms
+- Custom 404 page
 
-## Backend
-The `/backend` folder is a separate Render backend. Do not upload it into the GitHub Pages repository if you are keeping frontend and backend in separate repositories.
-
-Frontend API URL is in `js/config.js`.
+## Important
+Do not put backend code on GitHub Pages. The backend belongs on Render.
