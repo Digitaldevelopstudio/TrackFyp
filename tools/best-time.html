@@ -1,1 +1,81 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Best Time to Post — TrackFyp</title><link rel="stylesheet" href="../css/style.css"></head><body><script>window.BASE='../';</script><div id="site-header"></div><main><section class="tool-hero container"><span class="eyebrow">FREE TOOL</span><h1>Best Time to Post</h1><p class="small">Country aur audience type ke basis par practical starter windows.</p></section><section class="container tool-layout"><div class="tool-box"><div class="field"><label>Country / region</label><select id="c"><option>Pakistan</option><option>Qatar / GCC</option><option>United States</option><option>United Kingdom</option><option>India</option><option>Other</option></select></div><button class="btn btn-hot" onclick="go()">Show Posting Windows</button><div id="out" class="result"></div></div><aside class="side-box"><b>Important</b><p class="small">No universal magic time exists. Your own audience analytics should override these starter windows.</p></aside></section></main><div id="site-footer"></div><script>function go(){let c=document.getElementById('c').value;showResult('out',`<b>Starter windows for ${escapeHtml(c)}</b><div class="check-list" style="margin-top:12px"><div class="check">🌙 7:00 PM – 10:00 PM</div><div class="check">☀️ 12:00 PM – 2:00 PM</div><div class="check">📅 Test Tue–Thu first, then compare your analytics.</div></div>`)}</script><script src="../js/config.js"></script><script src="../js/main.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Best Time to Post — TrackFyp</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.bt-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(230px,.9fr);gap:18px}
+.bt-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bt-controls .field{margin:0}.bt-results{margin-top:18px}
+.bt-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.bt-stat,.bt-note,.bt-slot{border:1px solid var(--border,#272b36);border-radius:12px;padding:13px;background:rgba(255,255,255,.025)}
+.bt-stat strong{display:block;font-size:1.05rem;margin-top:5px}
+.bt-table-wrap{overflow-x:auto;border:1px solid var(--border,#272b36);border-radius:12px}
+.bt-table{width:100%;border-collapse:collapse;min-width:480px}
+.bt-table th,.bt-table td{text-align:left;padding:12px;border-bottom:1px solid var(--border,#272b36);vertical-align:top}
+.bt-table th{font-size:.85rem;opacity:.8}.bt-table tr:last-child td{border-bottom:0}
+.bt-tag{display:inline-block;border-radius:999px;padding:4px 8px;font-size:.78rem;background:rgba(255,0,80,.12);margin:2px 3px 2px 0}
+.bt-muted{opacity:.78;font-size:.9rem}.bt-tip-list{padding-left:18px}.bt-tip-list li{margin:9px 0}
+@media(max-width:760px){.bt-grid{grid-template-columns:1fr}.bt-controls{grid-template-columns:1fr}.bt-summary{grid-template-columns:1fr 1fr}.bt-summary .bt-stat:last-child{grid-column:1/-1}}
+</style></head>
+<body><script>window.BASE='../';</script><div id="site-header"></div>
+<main>
+<section class="tool-hero container"><span class="eyebrow">FREE TOOL</span><h1>Best Time to Post</h1><p class="small">Country ke local time aur audience routine ke mutabiq practical starter windows — har country ke liye alag recommendations.</p></section>
+<section class="container bt-grid">
+<div class="tool-box">
+<div class="bt-controls">
+<div class="field"><label for="country">Country / region</label><select id="country">
+<option value="PK">Pakistan</option><option value="QA">Qatar</option><option value="SA">Saudi Arabia</option><option value="AE">United Arab Emirates</option><option value="IN">India</option><option value="BD">Bangladesh</option><option value="LK">Sri Lanka</option><option value="NP">Nepal</option><option value="GB">United Kingdom</option><option value="US">United States</option><option value="CA">Canada</option><option value="AU">Australia</option><option value="NZ">New Zealand</option><option value="TR">Turkey</option><option value="MY">Malaysia</option><option value="ID">Indonesia</option><option value="PH">Philippines</option><option value="NG">Nigeria</option><option value="ZA">South Africa</option><option value="BR">Brazil</option>
+</select></div>
+<div class="field"><label for="audience">Audience type</label><select id="audience"><option value="general">General audience</option><option value="students">Students / young audience</option><option value="professionals">Working professionals</option><option value="shopping">Shopping / business</option></select></div>
+</div>
+<p class="bt-muted" style="margin:14px 0 0">Times below use the selected country's typical local time. For countries with multiple time zones, use the time zone where most of your followers live.</p>
+<button class="btn btn-hot" style="margin-top:14px" onclick="go()">Show Posting Windows</button>
+<div id="out" class="bt-results" aria-live="polite"></div>
+</div>
+<aside class="side-box"><b>How to use these windows</b>
+<ul class="bt-tip-list bt-muted"><li>Start by testing the suggested windows for 2 weeks.</li><li>Keep video quality and topic similar while comparing results.</li><li>Compare views after 2 hours and again after 24 hours.</li><li>Your TikTok analytics are more reliable than any general guide.</li></ul>
+<div class="bt-note"><strong>Important</strong><p class="small">These are practical starting estimates, not guaranteed viral times or live platform analytics.</p></div></aside>
+</section></main><div id="site-footer"></div>
+<script>
+const postingData={
+PK:{name:'Pakistan',tz:'PKT (UTC+5)',evening:'7:00 PM – 10:00 PM',midday:'12:30 PM – 2:00 PM',days:'Tuesday–Thursday',extra:'Friday evening can also be worth testing.'},
+QA:{name:'Qatar',tz:'AST (UTC+3)',evening:'6:30 PM – 9:30 PM',midday:'12:00 PM – 2:00 PM',days:'Sunday–Wednesday',extra:'Test after work and after dinner; compare Thursday night separately.'},
+SA:{name:'Saudi Arabia',tz:'Arabia Standard Time (UTC+3)',evening:'7:00 PM – 10:00 PM',midday:'12:00 PM – 2:00 PM',days:'Sunday–Wednesday',extra:'Try a second test window after evening family time.'},
+AE:{name:'United Arab Emirates',tz:'GST (UTC+4)',evening:'7:00 PM – 10:00 PM',midday:'12:00 PM – 2:00 PM',days:'Monday–Thursday',extra:'Test late evening if your audience is active after work.'},
+IN:{name:'India',tz:'IST (UTC+5:30)',evening:'6:30 PM – 9:30 PM',midday:'12:00 PM – 2:00 PM',days:'Tuesday–Thursday',extra:'Try 8:00–10:00 AM as a comparison window for commute-time viewers.'},
+BD:{name:'Bangladesh',tz:'BST (UTC+6)',evening:'7:00 PM – 10:00 PM',midday:'12:00 PM – 2:00 PM',days:'Sunday–Wednesday',extra:'Compare early evening against the later 9 PM slot.'},
+LK:{name:'Sri Lanka',tz:'SLST (UTC+5:30)',evening:'6:30 PM – 9:30 PM',midday:'12:00 PM – 1:30 PM',days:'Tuesday–Thursday',extra:'Test one weekend slot if your content is entertainment-focused.'},
+NP:{name:'Nepal',tz:'NPT (UTC+5:45)',evening:'6:30 PM – 9:00 PM',midday:'12:00 PM – 1:30 PM',days:'Sunday–Thursday',extra:'Keep times in Nepal local time; compare evening results weekly.'},
+GB:{name:'United Kingdom',tz:'UK local time (GMT/BST seasonally)',evening:'7:00 PM – 10:00 PM',midday:'12:00 PM – 2:00 PM',days:'Tuesday–Thursday',extra:'Try 7:00–9:00 AM for commuters and early scrollers.'},
+US:{name:'United States',tz:'Audience time zone (multiple zones)',evening:'6:00 PM – 9:00 PM',midday:'11:30 AM – 1:30 PM',days:'Tuesday–Thursday',extra:'Choose Eastern, Central, Mountain or Pacific time based on follower location; do not use one time for the whole country.'},
+CA:{name:'Canada',tz:'Audience time zone (multiple zones)',evening:'6:00 PM – 9:00 PM',midday:'11:30 AM – 1:30 PM',days:'Tuesday–Thursday',extra:'Use the province/time zone where most followers live.'},
+AU:{name:'Australia',tz:'Audience time zone (multiple zones)',evening:'6:00 PM – 9:00 PM',midday:'12:00 PM – 2:00 PM',days:'Tuesday–Thursday',extra:'Account for daylight-saving differences between states.'},
+NZ:{name:'New Zealand',tz:'NZ local time (seasonally changes)',evening:'6:30 PM – 9:00 PM',midday:'12:00 PM – 1:30 PM',days:'Tuesday–Thursday',extra:'Compare the evening window with 7:00–9:00 AM.'},
+TR:{name:'Turkey',tz:'TRT (UTC+3)',evening:'7:00 PM – 10:00 PM',midday:'12:00 PM – 2:00 PM',days:'Monday–Thursday',extra:'Try the later end of the evening window for entertainment videos.'},
+MY:{name:'Malaysia',tz:'MYT (UTC+8)',evening:'7:00 PM – 10:00 PM',midday:'12:00 PM – 2:00 PM',days:'Tuesday–Thursday',extra:'Compare lunch-break viewing with evening viewing.'},
+ID:{name:'Indonesia',tz:'Use your audience zone (WIB/WITA/WIT)',evening:'6:30 PM – 9:30 PM',midday:'12:00 PM – 1:30 PM',days:'Tuesday–Thursday',extra:'Indonesia has multiple time zones; select the region where your followers are concentrated.'},
+PH:{name:'Philippines',tz:'PHT (UTC+8)',evening:'6:30 PM – 9:30 PM',midday:'12:00 PM – 1:30 PM',days:'Tuesday–Thursday',extra:'Test a weekend evening for entertainment and lifestyle content.'},
+NG:{name:'Nigeria',tz:'WAT (UTC+1)',evening:'7:00 PM – 10:00 PM',midday:'12:00 PM – 2:00 PM',days:'Tuesday–Thursday',extra:'Compare evening posts with a morning test around 7:00–9:00 AM.'},
+ZA:{name:'South Africa',tz:'SAST (UTC+2)',evening:'6:00 PM – 9:00 PM',midday:'12:00 PM – 2:00 PM',days:'Tuesday–Thursday',extra:'Test shortly after typical work and school hours.'},
+BR:{name:'Brazil',tz:'Use your audience zone (multiple zones)',evening:'6:00 PM – 9:00 PM',midday:'11:30 AM – 1:30 PM',days:'Tuesday–Thursday',extra:'Brazil spans time zones; use the main city/region in your analytics.'}
+};
+function go(){
+ const code=document.getElementById('country').value, audience=document.getElementById('audience').value, d=postingData[code];
+ let eve=d.evening, mid=d.midday, days=d.days, extra=d.extra;
+ if(audience==='students'){mid='11:00 AM – 1:00 PM';extra+=' Students may also be active after school; test 3:00–5:00 PM.';}
+ if(audience==='professionals'){mid='12:00 PM – 2:00 PM';extra+=' Compare lunch break with the after-work window.';}
+ if(audience==='shopping'){eve='6:00 PM – 9:00 PM';mid='12:00 PM – 2:00 PM';extra+=' For product posts, compare saves, profile visits and clicks—not views only.';}
+ const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ document.getElementById('out').innerHTML=`<h2 style="font-size:1.1rem;margin-bottom:4px">Posting plan for ${safe(d.name)}</h2><p class="bt-muted">Local time: ${safe(d.tz)} · Audience: ${safe(document.getElementById('audience').selectedOptions[0].text)}</p>
+ <div class="bt-summary"><div class="bt-stat"><span class="bt-muted">Best starter window</span><strong>🌙 ${safe(eve)}</strong></div><div class="bt-stat"><span class="bt-muted">Second test window</span><strong>☀️ ${safe(mid)}</strong></div><div class="bt-stat"><span class="bt-muted">Start testing on</span><strong>📅 ${safe(days)}</strong></div></div>
+ <div class="bt-table-wrap"><table class="bt-table"><thead><tr><th>Test</th><th>When to post</th><th>What to learn</th></tr></thead><tbody>
+ <tr><td><span class="bt-tag">Test A</span></td><td>${safe(eve)}</td><td>Compare reach, average watch time and completion rate.</td></tr>
+ <tr><td><span class="bt-tag">Test B</span></td><td>${safe(mid)}</td><td>Check whether lunch-break viewers respond better.</td></tr>
+ <tr><td><span class="bt-tag">Test C</span></td><td>7:00 AM – 9:00 AM</td><td>Optional comparison for commute / morning scrolling.</td></tr></tbody></table></div>
+ <div class="bt-note" style="margin-top:12px"><strong>Country-specific tip</strong><p class="small">${safe(extra)}</p></div>
+ <p class="bt-muted" style="margin-top:12px">Run each test for at least 2 weeks and compare similar videos. These are estimates, not a guarantee.</p>`;
+}
+go();
+</script><script src="../js/config.js"></script><script src="../js/main.js"></script></body></html>
