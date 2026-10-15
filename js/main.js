@@ -8,5 +8,21 @@ function initLang(){let l=localStorage.getItem('trackfyp_lang')||'ur';document.q
 window.api=async function(path,opts={}){let r=await fetch((C.API_BASE||'')+path,opts);let data;try{data=await r.json()}catch{data={error:await r.text()}}if(!r.ok)throw new Error(data.error||'Request failed');return data};
 window.showResult=(id,html)=>{let e=document.getElementById(id);if(e){e.innerHTML=html;e.classList.add('show')}};
 window.escapeHtml=s=>String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-document.addEventListener('DOMContentLoaded',()=>{header();footer();initLang();let p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href').endsWith(p))a.classList.add('active')})});
+
+function initPremiumAccess(){
+ const tool=document.querySelector('[data-premium-tool="true"]');
+ if(!tool)return;
+ const panel=document.createElement('section');panel.className='container premium-access-panel';
+ panel.innerHTML='<div class="tool-box premium-access-box"><div class="premium-access-title"><span class="eyebrow">PREMIUM ACCESS</span><h2>Verify your subscription</h2><p class="small">Safepay par use ki hui email enter karein. Active status ke baad tool aapki subscription email use karega.</p></div><div class="premium-access-controls"><label for="trackfypPremiumEmail">Subscription email</label><input id="trackfypPremiumEmail" type="email" autocomplete="email" placeholder="you@example.com"><button id="trackfypPremiumCheck" class="btn" type="button">Check Premium Status</button></div><div id="trackfypPremiumStatus" class="result" aria-live="polite"></div></div>';
+ tool.parentNode.insertBefore(panel,tool);
+ const emailInput=panel.querySelector('#trackfypPremiumEmail'), checkBtn=panel.querySelector('#trackfypPremiumCheck'), statusBox=panel.querySelector('#trackfypPremiumStatus');
+ try{emailInput.value=localStorage.getItem('trackfyp_premium_email')||'';}catch(_){}
+ window.getPremiumEmail=function(){const val=(emailInput.value||'').trim().toLowerCase();if(val){try{localStorage.setItem('trackfyp_premium_email',val)}catch(_){}}return val;};
+ function lockState(active){document.body.classList.toggle('trackfyp-premium-active',!!active);document.querySelectorAll('.tool-layout .side-box .lock').forEach(el=>{if(!el.dataset.originalHtml)el.dataset.originalHtml=el.innerHTML;if(active){el.innerHTML='<span class="eyebrow">VERIFIED</span><h3>Premium Active</h3><p class="small">Your subscription is active. Premium tools are available below.</p>';el.classList.add('premium-verified')}else{el.innerHTML=el.dataset.originalHtml;el.classList.remove('premium-verified')}})}
+ async function check(){const email=window.getPremiumEmail();if(!email){statusBox.className='result show';statusBox.innerHTML='<b>Email required</b><p class="small">Safepay subscription wali email enter karein.</p>';lockState(false);return;}checkBtn.disabled=true;checkBtn.textContent='Checking…';statusBox.className='result show';statusBox.textContent='Subscription status check ho raha hai…';try{const d=await window.api('/api/check-subscription?email='+encodeURIComponent(email));if(d.active){statusBox.innerHTML='<b>Premium status: Active</b><p class="small">Subscription verified for '+window.escapeHtml(email)+'.</p>';lockState(true)}else{statusBox.innerHTML='<b>Premium status: Not active</b><p class="small">Is email par active subscription nahi mili. Safepay mein use ki hui email check karein.</p>';lockState(false)}}catch(e){statusBox.innerHTML='<b>Status check failed</b><p class="small">'+window.escapeHtml(e.message)+'</p>';lockState(false)}finally{checkBtn.disabled=false;checkBtn.textContent='Check Premium Status'}}
+ checkBtn.addEventListener('click',check);
+ if(emailInput.value.trim())check();
+}
+
+document.addEventListener('DOMContentLoaded',()=>{header();footer();initLang();initPremiumAccess();let p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href').endsWith(p))a.classList.add('active')})});
 })();
