@@ -10,13 +10,3 @@
 
 /* Premium UX: show one subscription status panel only after verification */
 .tool-layout .side-box[hidden]{display:none!important}.tool-layout.premium-unlocked-layout{grid-template-columns:minmax(0,1fr)!important}.premium-access-panel{margin-bottom:20px}
-
-/* TrackFyp professional interaction and reserved ad area */
-.tf-spinner{display:inline-block;width:15px;height:15px;margin-right:8px;vertical-align:-3px;border:2px solid rgba(255,255,255,.38);border-top-color:#fff;border-radius:50%;animation:tfspin .75s linear infinite}
-@keyframes tfspin{to{transform:rotate(360deg)}}
-button[aria-busy="true"]{opacity:.82;cursor:wait}
-.tf-ad-slot{margin-top:28px;margin-bottom:28px}
-.tf-ad-inner{min-height:110px;border:1px dashed rgba(160,170,190,.24);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:18px;background:rgba(255,255,255,.015);color:var(--muted,#a8afbd)}
-.tf-ad-inner p{margin:5px 0;font-size:14px}.tf-ad-inner small{font-size:11px}.tf-ad-label{font-size:9px;letter-spacing:.16em;opacity:.65}
-.result pre{font:inherit;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7;color:var(--text,#e8eaf0);margin:0}
-.result.show{scroll-margin-top:24px}

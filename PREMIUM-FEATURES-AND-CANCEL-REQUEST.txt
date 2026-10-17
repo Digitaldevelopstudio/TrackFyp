@@ -1,0 +1,11 @@
+TrackFyp frontend update
+
+Changes:
+1. Premium feature cards on premium.html are clickable and open their matching tool pages.
+2. Added a subscription status checker using /api/check-subscription.
+3. Added a cancellation request form using the existing Formspree form endpoint. This is a support request, NOT an instant Safepay cancellation.
+
+Important:
+- The status checker only reflects the backend database. Safepay Active + website inactive means webhook/database mapping still needs fixing.
+- Automated cancellation must not be exposed by email alone. It needs secure customer verification and the Safepay subscription ID saved in the database, plus a server-side Safepay cancel API call.
+- Keep existing backend environment variables unchanged.
