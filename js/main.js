@@ -26,5 +26,22 @@ function initPremiumAccess(){
  emailInput.addEventListener('change',()=>{try{if(emailInput.value.trim().toLowerCase()!==localStorage.getItem('trackfyp_premium_active_email'))localStorage.removeItem('trackfyp_premium_active_email')}catch(_){} });
  if(emailInput.value.trim())check(true);
 }
-document.addEventListener('DOMContentLoaded',()=>{header();footer();initLang();initPremiumAccess();let p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href').endsWith(p))a.classList.add('active')})});
+
+// Professional tool feedback: show a spinner while an inline tool action is waiting on API.
+(function installToolFeedback(){
+ let activeButton=null, originalLabel='', requestCount=0;
+ function start(btn){ if(!btn || btn.dataset.tfBusy==='1') return; activeButton=btn; originalLabel=btn.innerHTML; btn.dataset.tfBusy='1'; btn.disabled=true; btn.setAttribute('aria-busy','true'); btn.innerHTML='<span class="tf-spinner" aria-hidden="true"></span> Working…'; }
+ function stop(){ if(!activeButton) return; activeButton.disabled=false; activeButton.removeAttribute('aria-busy'); activeButton.dataset.tfBusy='0'; activeButton.innerHTML=originalLabel; activeButton=null; }
+ document.addEventListener('click',ev=>{const btn=ev.target.closest('button[onclick]');if(!btn)return;start(btn);const before=requestCount;Promise.resolve().then(()=>{if(requestCount===before)stop();});},true);
+ const oldApi=window.api;
+ if(typeof oldApi==='function') window.api=async function(...args){requestCount++;try{return await oldApi.apply(this,args)}finally{stop()}};
+})();
+function insertAdSlot(){
+ const main=document.querySelector('main'); if(!main||document.querySelector('.tf-ad-slot'))return;
+ const slot=document.createElement('section');slot.className='container tf-ad-slot';slot.setAttribute('aria-label','Advertisement space');
+ slot.innerHTML='<div class="tf-ad-inner"><span class="tf-ad-label">ADVERTISEMENT</span><p>Ad space reserved</p><small>Ads will appear here when an ad network and ad unit are configured.</small></div>';
+ const footer=document.getElementById('site-footer'); if(footer&&footer.parentNode)footer.parentNode.insertBefore(slot,footer);else main.appendChild(slot);
+}
+
+document.addEventListener('DOMContentLoaded',()=>{header();footer();initLang();initPremiumAccess();insertAdSlot();let p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href').endsWith(p))a.classList.add('active')})});
 })();
