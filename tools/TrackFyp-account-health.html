@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Account Health — TrackFyp</title><link rel="stylesheet" href="../css/style.css">
+<style>
+.ah-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(230px,.9fr);gap:18px}
+.ah-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.ah-metric,.ah-panel,.ah-diagnosis{border:1px solid var(--border,#272b36);border-radius:13px;padding:14px;background:rgba(255,255,255,.025)}
+.ah-metric .label{font-size:.85rem;opacity:.75}.ah-metric strong{display:block;font-size:1.35rem;margin-top:5px;overflow-wrap:anywhere}
+.ah-head{display:flex;align-items:center;gap:13px;flex-wrap:wrap}.ah-avatar{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:rgba(255,0,80,.14);font-size:1.3rem}
+.ah-pill{display:inline-block;border:1px solid var(--border,#272b36);border-radius:999px;padding:5px 9px;font-size:.8rem}
+.ah-diagnoses{display:grid;gap:10px;margin-top:12px}.ah-diagnosis strong{display:block;margin-bottom:5px}.ah-good{border-color:rgba(53,190,130,.35)}.ah-watch{border-color:rgba(255,190,60,.35)}.ah-unknown{border-color:rgba(150,160,180,.35)}
+.ah-section-title{font-size:1.05rem;margin:18px 0 8px}.ah-progress{height:7px;border-radius:20px;background:rgba(255,255,255,.09);overflow:hidden;margin-top:10px}.ah-progress span{display:block;height:100%;background:var(--hot,#ff0050);width:0}
+.ah-error{padding:12px;border:1px solid rgba(255,80,80,.35);border-radius:12px}
+@media(max-width:760px){.ah-grid{grid-template-columns:1fr}.ah-metrics{grid-template-columns:1fr 1fr}.ah-metric strong{font-size:1.1rem}}
+</style></head><body><script>window.BASE='../';</script><div id="site-header"></div>
+<main><section class="tool-hero container"><span class="eyebrow">FREE TOOL</span><h1>Account Health</h1><p class="small">Public profile signals ko readable summary aur practical guidance mein dekhein.</p></section>
+<section class="container ah-grid"><div class="tool-box">
+<div class="field"><label for="url">TikTok profile link or username</label><input id="url" placeholder="https://www.tiktok.com/@username" autocomplete="url"></div>
+<button class="btn btn-hot" id="checkBtn" onclick="go()">Check Health</button><div id="out" aria-live="polite" style="margin-top:16px"></div>
+</div><aside class="side-box"><b>What this checks</b><p class="small">Public profile statistics and basic consistency signals, when available.</p><div class="ah-panel" style="margin-top:12px"><strong>Important</strong><p class="small">This is guidance based on public data. It cannot confirm a shadowban, policy violation, or official TikTok account status.</p></div><div class="ah-panel" style="margin-top:12px"><strong>Improve the quality of the check</strong><ul class="small"><li>Use a public profile.</li><li>Check again after posting consistently.</li><li>Compare performance across several videos.</li></ul></div></aside></section></main><div id="site-footer"></div>
+<script>
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function num(v){const n=Number(v);return Number.isFinite(n)?n.toLocaleString(): '—';}
+function first(o,keys){for(const k of keys){if(o&&o[k]!==undefined&&o[k]!==null&&o[k]!=='')return o[k];}return null;}
+function normalise(d){
+ let root=d?.data??d?.result??d;
+ let profile=root?.profile??root?.user??root?.userInfo??root;
+ if(profile?.user && typeof profile.user==='object') profile=profile.user;
+ const username=first(profile,['username','uniqueId','unique_id','handle'])||first(root,['username','uniqueId'])||'TikTok creator';
+ const name=first(profile,['name','nickname','displayName','display_name'])||username;
+ const followers=first(profile,['followerCount','followers','follower_count','fans']);
+ const following=first(profile,['followingCount','following','following_count']);
+ const likes=first(profile,['heartCount','likes','totalLikes','total_likes','heart_count']);
+ const videos=first(profile,['videoCount','videos','video_count']);
+ const avg=first(profile,['avgLikesPerVideo','averageLikesPerVideo','avg_likes_per_video']);
+ let diagnoses=first(root,['diagnosis','diagnoses','signals'])||first(profile,['diagnosis','diagnoses'])||[];
+ if(!Array.isArray(diagnoses)) diagnoses=[];
+ return {root,profile,username,name,followers,following,likes,videos,avg,diagnoses,source:first(root,['source'])||first(d,['source'])||'Public profile data'};
+}
+function diagnosisMarkup(items){
+ if(!items.length)return '<div class="ah-diagnosis ah-unknown"><strong>Not enough detail yet</strong><p class="small">The profile data did not include written guidance. Try again later or compare several recent videos manually.</p></div>';
+ return items.map(x=>{
+  if(typeof x==='string')x={text:x,type:'info'};
+  const type=String(x?.type||'info').toLowerCase(), cls=type==='good'?'ah-good':(type==='warning'||type==='bad'||type==='poor'?'ah-watch':'ah-unknown');
+  const label=type==='good'?'Positive signal':(type==='warning'||type==='bad'||type==='poor'?'Needs attention':'Observation');
+  return `<div class="ah-diagnosis ${cls}"><strong>${esc(label)}</strong><p class="small">${esc(x?.text||x?.message||x?.description||'No detail provided.')}</p></div>`;
+ }).join('');
+}
+async function go(){
+ const raw=document.getElementById('url').value.trim();
+ if(!raw){document.getElementById('out').innerHTML='<div class="ah-error">Enter a TikTok profile URL or username first.</div>';return;}
+ const u=/^https?:\/\//i.test(raw)?raw:(raw.startsWith('@')?'https://www.tiktok.com/'+raw:'https://www.tiktok.com/@'+raw);
+ const btn=document.getElementById('checkBtn');btn.disabled=true;btn.textContent='Checking profile…';
+ document.getElementById('out').innerHTML='<div class="ah-panel">Checking public profile signals…</div>';
+ try{
+  const data=await api('/api/channel-analyze?url='+encodeURIComponent(u));
+  const d=normalise(data), avg=d.avg!==null?num(d.avg):(d.likes!==null&&d.videos!==null&&Number(d.videos)>0?num(Math.round(Number(d.likes)/Number(d.videos))):'—');
+  document.getElementById('out').innerHTML=`
+  <div class="ah-panel"><div class="ah-head"><div class="ah-avatar">♪</div><div><h2 style="font-size:1.2rem;margin:0">${esc(d.name)}</h2><p class="small" style="margin:4px 0 0">@${esc(String(d.username).replace(/^@/,''))}</p></div><span class="ah-pill">Public profile report</span></div><p class="small" style="margin:12px 0 0">Data source: ${esc(d.source)} · No official account-status decision is implied.</p></div>
+  <div class="ah-metrics">
+  <div class="ah-metric"><span class="label">Followers</span><strong>${d.followers===null?'—':num(d.followers)}</strong></div>
+  <div class="ah-metric"><span class="label">Following</span><strong>${d.following===null?'—':num(d.following)}</strong></div>
+  <div class="ah-metric"><span class="label">Total likes</span><strong>${d.likes===null?'—':num(d.likes)}</strong></div>
+  <div class="ah-metric"><span class="label">Videos posted</span><strong>${d.videos===null?'—':num(d.videos)}</strong></div>
+  <div class="ah-metric"><span class="label">Average likes / video</span><strong>${avg}</strong></div>
+  <div class="ah-metric"><span class="label">Report type</span><strong style="font-size:1rem">Public signals</strong></div>
+  </div>
+  <h3 class="ah-section-title">What these signals suggest</h3><div class="ah-diagnoses">${diagnosisMarkup(d.diagnoses)}</div>
+  <div class="ah-panel" style="margin-top:12px"><strong>Recommended next steps</strong><ol class="small"><li>Review the last 5–10 videos, not just one post.</li><li>Compare average watch time, completion rate, shares and saves in TikTok analytics.</li><li>If reach suddenly drops, compare similar videos over several days before drawing a conclusion.</li></ol></div>`;
+ }catch(e){document.getElementById('out').innerHTML='<div class="ah-error"><strong>Could not check this profile</strong><p class="small">'+esc(e.message||'Please try again.')+'</p><p class="small">Use a public profile link such as https://www.tiktok.com/@username.</p></div>';}
+ finally{btn.disabled=false;btn.textContent='Check Health';}
+}
+</script><script src="../js/config.js"></script><script src="../js/main.js"></script></body></html>
