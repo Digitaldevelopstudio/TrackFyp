@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Visibility Health — TrackFyp</title>
+<link rel="stylesheet" href="../css/style.css">
+<style>
+.vh-grid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(230px,.9fr);gap:18px}
+.vh-card{border:1px solid var(--border,#272b36);border-radius:13px;padding:15px;background:rgba(255,255,255,.025);margin-top:14px}
+.vh-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.vh-stat{border:1px solid var(--border,#272b36);border-radius:12px;padding:13px}
+.vh-stat span{display:block;font-size:.82rem;opacity:.75}.vh-stat strong{display:block;font-size:1.25rem;margin-top:6px;overflow-wrap:anywhere}
+.vh-risk{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.vh-pill{display:inline-block;border:1px solid var(--border,#272b36);border-radius:999px;padding:6px 10px;font-size:.85rem}
+.vh-good{border-color:rgba(50,200,130,.45)}.vh-mid{border-color:rgba(255,190,50,.45)}.vh-high{border-color:rgba(255,70,90,.45)}.vh-muted{font-size:.9rem;opacity:.8}
+.vh-error{border:1px solid rgba(255,70,90,.4);border-radius:12px;padding:13px}
+@media(max-width:760px){.vh-grid{grid-template-columns:1fr}.vh-stats{grid-template-columns:1fr 1fr}.vh-stat strong{font-size:1.08rem}}
+</style></head>
+<body><script>window.BASE='../';</script><div id="site-header"></div>
+<main>
+<section class="tool-hero container"><span class="eyebrow">FREE TOOL</span><h1>Visibility Health</h1><p class="small">Public profile signals ko samjhein — yeh official TikTok shadowban detector nahi hai.</p></section>
+<section class="container vh-grid">
+<div class="tool-box">
+<div class="field"><label for="url">TikTok profile link or username</label><input id="url" placeholder="@username or https://www.tiktok.com/@username" autocomplete="url"></div>
+<p class="vh-muted" style="margin:8px 0 0">Username bhi likh sakte hain, misal: <b>wahabvoice</b>. Tool usay profile link mein convert karega.</p>
+<button class="btn btn-hot" id="checkBtn" onclick="go()" style="margin-top:14px">Check Visibility</button>
+<div id="out" aria-live="polite"></div>
+</div>
+<aside class="side-box"><b>What this result means</b>
+<p class="small">Yeh tool public followers, videos aur average likes ki bunyaad par ek rough engagement signal dikhata hai.</p>
+<div class="vh-card"><strong>Important</strong><p class="small">Low likes ka matlab lazmi shadowban nahi. Topic, video quality, watch time, audience aur posting consistency bhi reach ko affect karte hain.</p></div>
+</aside>
+</section></main><div id="site-footer"></div>
+<script>
+function vhEsc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function vhNum(n){const v=Number(n);return Number.isFinite(v)?v.toLocaleString():'—';}
+function vhUrl(raw){
+ let s=raw.trim();
+ if(!s)return '';
+ if(/^@?[A-Za-z0-9._]+$/.test(s)) return 'https://www.tiktok.com/@'+s.replace(/^@/,'');
+ if(!/^https?:\/\//i.test(s)) s='https://'+s;
+ try{
+  const u=new URL(s);
+  if(!/(^|\.)tiktok\.com$/i.test(u.hostname)) return null;
+  if(!u.pathname.includes('/@')) return null;
+  return u.toString();
+ }catch(e){return null;}
+}
+async function go(){
+ const raw=document.getElementById('url').value;
+ const url=vhUrl(raw);
+ const out=document.getElementById('out');
+ const btn=document.getElementById('checkBtn');
+ if(!raw.trim()){out.innerHTML='<div class="vh-error" style="margin-top:14px"><strong>Username ya profile link likhein.</strong></div>';return;}
+ if(!url){out.innerHTML='<div class="vh-error" style="margin-top:14px"><strong>Yeh TikTok profile link sahi nahi lag raha.</strong><p class="small">Misal: wahabvoice ya https://www.tiktok.com/@wahabvoice</p></div>';return;}
+ btn.disabled=true;btn.textContent='Checking…';
+ out.innerHTML='<div class="vh-card">Public profile signals check ho rahe hain…</div>';
+ try{
+  const d=await api('/api/shadowban-check?url='+encodeURIComponent(url));
+  if(!d || d.success===false) throw new Error(d?.error||'Result available nahi.');
+  const level=String(d.riskLevel||'Not enough public data');
+  let cls='vh-mid';
+  if(/low risk/i.test(level))cls='vh-good';
+  if(/high risk/i.test(level))cls='vh-high';
+  const ratio=Number(d.followerCount)>0?(Number(d.avgLikesPerVideo||0)/Number(d.followerCount))*100:null;
+  out.innerHTML=`<div class="vh-card">
+   <div class="vh-risk"><h2 style="font-size:1.15rem;margin:0">Visibility report</h2><span class="vh-pill ${cls}">${vhEsc(level)}</span></div>
+   <p style="margin:12px 0 0">${vhEsc(d.riskReason||'Public data se conclusive result nahi mila.')}</p>
+   <div class="vh-stats">
+    <div class="vh-stat"><span>Followers</span><strong>${vhNum(d.followerCount)}</strong></div>
+    <div class="vh-stat"><span>Videos posted</span><strong>${vhNum(d.videoCount)}</strong></div>
+    <div class="vh-stat"><span>Avg. likes / video</span><strong>${vhNum(d.avgLikesPerVideo)}</strong></div>
+   </div>
+   <div class="vh-card"><strong>How to read this</strong><p class="small">${ratio===null?'Public engagement ratio calculate karne ke liye data kafi nahi.':'Average likes followers ka taqreeban '+ratio.toFixed(2)+'% hain. Yeh sirf rough signal hai, official TikTok decision nahi.'}</p></div>
+   <div class="vh-card"><strong>What to do next</strong><ol class="small"><li>Apni recent 5–10 videos ke views, watch time aur completion rate compare karein.</li><li>Similar topic ki videos ko compare karein; har video ka result alag ho sakta hai.</li><li>Consistent posting karein aur hook/retention improve karein.</li></ol></div>
+   <p class="vh-muted" style="margin-top:12px">This is an estimate from available public signals. It cannot confirm or rule out a TikTok shadowban.</p>
+  </div>`;
+ }catch(e){
+  out.innerHTML='<div class="vh-error" style="margin-top:14px"><strong>Check abhi complete nahi ho saka</strong><p class="small">'+vhEsc(e.message||'Backend ya TikTok data temporarily unavailable hai.')+'</p><p class="small">Username ya full public profile URL check karein. Agar error continue ho to backend service/logs check karne honge.</p></div>';
+ }finally{btn.disabled=false;btn.textContent='Check Visibility';}
+}
+</script>
+<script src="../js/config.js"></script><script src="../js/main.js"></script></body></html>
