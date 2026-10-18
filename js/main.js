@@ -26,9 +26,22 @@ function initPremiumAccess(){
  emailInput.addEventListener('change',()=>{try{if(emailInput.value.trim().toLowerCase()!==localStorage.getItem('trackfyp_premium_active_email'))localStorage.removeItem('trackfyp_premium_active_email')}catch(_){} });
  if(emailInput.value.trim())check(true);
 }
-function initWorkingIndicators(){
- const style=document.createElement('style');style.textContent='.tfp-working{display:inline-flex;align-items:center;gap:9px;opacity:.92}.tfp-spinner{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;display:inline-block;animation:tfpspin .7s linear infinite;vertical-align:middle}@keyframes tfpspin{to{transform:rotate(360deg)}}button[aria-busy="true"]{opacity:.8;cursor:progress}.tfp-live-status{font-size:.88rem;color:var(--muted,#9ca3af);margin:10px 0}';document.head.appendChild(style);
- document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b||b.disabled||b.dataset.noSpinner==='true')return;const label=(b.innerText||'').trim().toLowerCase();if(!/(analy|generat|find|optim|search|check|download|create|plan|score|predict|verify)/.test(label))return; if(b.dataset.tfpBusy==='1')return; b.dataset.tfpBusy='1';b.setAttribute('aria-busy','true');b.dataset.tfpOld=b.innerHTML;b.innerHTML='<span class="tfp-working"><span class="tfp-spinner" aria-hidden="true"></span><span>Working…</span></span>';const scope=b.closest('.tool-box,.tool-layout,main')||document;let done=false;const finish=()=>{if(done)return;done=true;b.innerHTML=b.dataset.tfpOld||'Submit';b.disabled=false;b.removeAttribute('aria-busy');delete b.dataset.tfpBusy;obs.disconnect();clearTimeout(timer)};const obs=new MutationObserver(()=>{const result=scope.querySelector('.result.show,[id$="Out"].show,[id$="out"].show');if(result&&result.textContent.trim())finish()});obs.observe(scope,{subtree:true,childList:true,characterData:true,attributes:true});const timer=setTimeout(finish,90000);});
+
+// Professional tool feedback: show a spinner while an inline tool action is waiting on API.
+(function installToolFeedback(){
+ let activeButton=null, originalLabel='', requestCount=0;
+ function start(btn){ if(!btn || btn.dataset.tfBusy==='1') return; activeButton=btn; originalLabel=btn.innerHTML; btn.dataset.tfBusy='1'; btn.disabled=true; btn.setAttribute('aria-busy','true'); btn.innerHTML='<span class="tf-spinner" aria-hidden="true"></span> Working…'; }
+ function stop(){ if(!activeButton) return; activeButton.disabled=false; activeButton.removeAttribute('aria-busy'); activeButton.dataset.tfBusy='0'; activeButton.innerHTML=originalLabel; activeButton=null; }
+ document.addEventListener('click',ev=>{const btn=ev.target.closest('button[onclick]');if(!btn)return;start(btn);const before=requestCount;Promise.resolve().then(()=>{if(requestCount===before)stop();});},true);
+ const oldApi=window.api;
+ if(typeof oldApi==='function') window.api=async function(...args){requestCount++;try{return await oldApi.apply(this,args)}finally{stop()}};
+})();
+function insertAdSlot(){
+ const main=document.querySelector('main'); if(!main||document.querySelector('.tf-ad-slot'))return;
+ const slot=document.createElement('section');slot.className='container tf-ad-slot';slot.setAttribute('aria-label','Advertisement space');
+ slot.innerHTML='<div class="tf-ad-inner"><span class="tf-ad-label">ADVERTISEMENT</span><p>Ad space reserved</p><small>Ads will appear here when an ad network and ad unit are configured.</small></div>';
+ const footer=document.getElementById('site-footer'); if(footer&&footer.parentNode)footer.parentNode.insertBefore(slot,footer);else main.appendChild(slot);
 }
-document.addEventListener('DOMContentLoaded',()=>{header();footer();initLang();initPremiumAccess();initWorkingIndicators();let p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href').endsWith(p))a.classList.add('active')})});
+
+document.addEventListener('DOMContentLoaded',()=>{header();footer();initLang();initPremiumAccess();insertAdSlot();let p=location.pathname.split('/').pop()||'index.html';document.querySelectorAll('.nav-links a').forEach(a=>{if(a.getAttribute('href').endsWith(p))a.classList.add('active')})});
 })();
